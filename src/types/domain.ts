@@ -1,9 +1,12 @@
 export interface GroceryItem {
-  id: number;
+  id: string;
+  isChecked: boolean;
   name: string;
+  quantity: number;
+  unit?: string;
 }
 
 export interface GroceryList {
-  id: number;
+  id: string;
   items: GroceryItem[];
 }

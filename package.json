@@ -4,9 +4,12 @@
   "main": "expo-router/entry",
   "scripts": {
     "android": "expo run:android",
+    "db:generate": "node scripts/generate-db.js",
+    "db:reset": "node scripts/reset-db.js",
     "ios": "expo run:ios",
     "lint": "eslint .",
     "prebuild": "expo prebuild --clean",
+    "server": "json-server --watch db.json --port 3000",
     "start": "expo start"
   },
   "dependencies": {
@@ -36,6 +39,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
+    "json-server": "^1.0.0-beta.3",
     "prettier": "^3.3.3"
   },
   "private": true

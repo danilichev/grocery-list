@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
-import { PropsWithChildren, useMemo } from "react";
+import React, { PropsWithChildren, useMemo } from "react";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,3 +32,8 @@ export const QueryClientProvider = ({ children }: PropsWithChildren) => {
     </PersistQueryClientProvider>
   );
 };
+
+export const QueryKeys = {
+  groceryList: "groceryList",
+  groceryLists: "groceryLists",
+} as const;
