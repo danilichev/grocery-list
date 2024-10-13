@@ -34,6 +34,7 @@ export const QueryClientProvider = ({ children }: PropsWithChildren) => {
 };
 
 export const QueryKeys = {
+  createGroceryList: "createGroceryList",
   groceryList: "groceryList",
   groceryLists: "groceryLists",
 } as const;

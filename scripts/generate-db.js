@@ -10,18 +10,19 @@ const generateGroceryItem = (id) => ({
   unit: units[Math.floor(Math.random() * units.length)],
 });
 
-const generateGroceryList = (id, itemCount) => ({
-  id: `${id}`,
+const generateGroceryList = (number, itemCount) => ({
+  id: `${number}`,
   items: Array.from({ length: itemCount }, (_, i) =>
     generateGroceryItem(i + 1),
   ),
-  name: `List ${id}`,
+  name: `List ${number}`,
+  number: number,
 });
 
 const generateDb = (listCount, itemCount) => ({
   "grocery-lists": Array.from({ length: listCount }, (_, i) =>
     generateGroceryList(i + 1, Math.floor(Math.random() * itemCount) + 1),
-  ).reverse(),
+  ),
 });
 
 const db = generateDb(100, 10);

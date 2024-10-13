@@ -1,4 +1,5 @@
 import {
+  AddIcon,
   Box,
   CheckIcon,
   HStack,
@@ -6,19 +7,13 @@ import {
   Spinner,
   Text,
 } from "@gluestack-ui/themed";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { useNavigation } from "expo-router";
 import React, { useCallback, useMemo } from "react";
-import {
-  Button,
-  FlatList,
-  ListRenderItemInfo,
-  Touchable,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, ListRenderItemInfo, TouchableOpacity } from "react-native";
 
-import { getGroceryLists } from "src/api/groceryLists";
+import { createGroceryList, getGroceryLists } from "src/api/groceryLists";
+import { ListFooter } from "src/components/ListFooter";
 import { useLoadMore } from "src/hooks/useLoadMore";
 import { QueryKeys } from "src/services/queryClient";
 import { GroceryList } from "src/types/domain";
@@ -33,31 +28,60 @@ const isListCompleted = (list: GroceryList) =>
 export default function SignInScreen() {
   const navigation = useNavigation<RootNavigationProp>();
 
-  const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
-    queryFn: ({ pageParam }) => getGroceryLists(pageParam),
-    queryKey: [QueryKeys.groceryLists],
-    initialPageParam: { limit: ITEMS_PER_REQUEST, offset: 0 },
-    getNextPageParam: (lastPage) => {
-      const loadedDataSize = lastPage.data.length + (lastPage.offset || 0);
-      return loadedDataSize < lastPage.total
-        ? { limit: ITEMS_PER_REQUEST, offset: loadedDataSize }
-        : null;
-    },
-    select: (data) => data.pages.flatMap((page) => page.data),
-  });
+  const { data, fetchNextPage, hasNextPage, isFetching, refetch } =
+    useInfiniteQuery({
+      queryFn: ({ pageParam }) => getGroceryLists(pageParam),
+      queryKey: [QueryKeys.groceryLists],
+      initialPageParam: { limit: ITEMS_PER_REQUEST, offset: 0 },
+      getNextPageParam: (lastPage) => {
+        const loadedDataSize = lastPage.data.length + (lastPage.offset || 0);
+        return loadedDataSize < lastPage.total
+          ? { limit: ITEMS_PER_REQUEST, offset: loadedDataSize }
+          : null;
+      },
+    });
+
+  const { mutateAsync: addGroceryList, isPending: isGroceryListAdding } =
+    useMutation({
+      mutationFn: createGroceryList,
+      mutationKey: [QueryKeys.createGroceryList],
+      onError: (error) => {
+        console.log("addGroceryList:error", error);
+      },
+      onSuccess: (data) => {
+        navigation.navigate("grocery-list", { id: data.id });
+        refetch();
+      },
+    });
 
   const loadMore = useLoadMore({ fetchNextPage, hasNextPage, isFetching });
 
-  const completedListMap = useMemo(
-    () =>
-      (data || []).reduce(
-        (acc, val) => ({ ...acc, [val.id]: isListCompleted(val) }),
-        {} as Record<string, boolean>,
-      ),
+  const groceryLists = useMemo(
+    () => data?.pages.flatMap((page) => page.data),
     [data],
   );
 
-  const onPressItem = useCallback(
+  const completedListMap = useMemo(
+    () =>
+      (groceryLists || []).reduce(
+        (acc, val) => ({ ...acc, [val.id]: isListCompleted(val) }),
+        {} as Record<string, boolean>,
+      ),
+    [groceryLists],
+  );
+
+  const onAddItemPress = useCallback(() => {
+    const number = (data?.pages[data.pages.length - 1].total || 0) + 1;
+
+    addGroceryList({
+      id: `${number}`,
+      items: [],
+      name: `List ${number}`,
+      number,
+    });
+  }, [addGroceryList, data]);
+
+  const onItemPress = useCallback(
     (id: string) => () => {
       navigation.navigate("grocery-list", { id });
     },
@@ -66,7 +90,7 @@ export default function SignInScreen() {
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<GroceryList>) => (
-      <TouchableOpacity activeOpacity={0.8} onPress={onPressItem(item.id)}>
+      <TouchableOpacity activeOpacity={0.8} onPress={onItemPress(item.id)}>
         <Box borderBottomWidth="$1" borderColor="$trueGray300" py="$4" p="$8">
           <HStack space="md" justifyContent="space-between">
             <Text color="$coolGray800" fontWeight="$bold">
@@ -79,11 +103,11 @@ export default function SignInScreen() {
         </Box>
       </TouchableOpacity>
     ),
-    [completedListMap, onPressItem],
+    [completedListMap, onItemPress],
   );
 
   return (
-    <View>
+    <>
       <FlatList
         ListEmptyComponent={
           isFetching ? null : (
@@ -94,13 +118,33 @@ export default function SignInScreen() {
             </Box>
           )
         }
-        ListFooterComponent={isFetching ? <Spinner m="$4" /> : null}
-        data={data}
+        ListFooterComponent={<ListFooter isLoading={isFetching} />}
+        data={groceryLists}
         keyExtractor={keyExtractor}
         onEndReached={loadMore}
         onEndReachedThreshold={0.25}
         renderItem={renderItem}
       />
-    </View>
+      <TouchableOpacity activeOpacity={0.8} onPress={onAddItemPress}>
+        <Box
+          // opacity={0.8}
+          alignItems="center"
+          bg="$primary800"
+          borderRadius="$full"
+          bottom="$6"
+          h="$16"
+          justifyContent="center"
+          position="absolute"
+          right="$6"
+          w="$16"
+        >
+          {isGroceryListAdding ? (
+            <Spinner color="white" />
+          ) : (
+            <Icon as={AddIcon} color="white" w="$8" h="$8" />
+          )}
+        </Box>
+      </TouchableOpacity>
+    </>
   );
 }
