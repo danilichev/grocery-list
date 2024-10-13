@@ -1,5 +1,6 @@
 import { config } from "@gluestack-ui/config";
 import {
+  Box,
   ChevronLeftIcon,
   GluestackUIProvider,
   Icon,
@@ -25,9 +26,12 @@ export default function RootLayout() {
               canGoBack ? (
                 <TouchableOpacity
                   activeOpacity={0.8}
+                  hitSlop={{ top: 8, bottom: 8, left: 16, right: 16 }}
                   onPress={navigation.goBack}
                 >
-                  <Icon as={ChevronLeftIcon} w="$6" h="$6" />
+                  <Box ml={-10}>
+                    <Icon as={ChevronLeftIcon} w="$7" h="$7" />
+                  </Box>
                 </TouchableOpacity>
               ) : null,
           }}

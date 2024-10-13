@@ -2,7 +2,7 @@ export interface GroceryItem {
   id: string;
   isChecked: boolean;
   name: string;
-  quantity: number;
+  quantity?: number;
   unit?: string;
 }
 

@@ -6,9 +6,26 @@ import {
 } from "src/types/common";
 import { GroceryList } from "src/types/domain";
 
+interface DeleteGroceryListParams {
+  id: string;
+}
+
 interface GetGroceryListParams {
   id: string;
 }
+
+interface UpdateGroceryListParams {
+  id: string;
+  update: Partial<Omit<GroceryList, "id">>;
+}
+
+// TODO: add response type
+export const deleteGroceryList = async ({ id }: DeleteGroceryListParams) => {
+  const response = await fetch(`${config.apiUrl}/grocery-lists/${id}`, {
+    method: "DELETE",
+  });
+  return response.json();
+};
 
 export const createGroceryList = async (
   params: GroceryList,
@@ -44,4 +61,16 @@ export const getGroceryLists = async ({
     offset: limit * (result.prev || 0),
     total: result.items,
   };
+};
+
+// TODO: add response type
+export const updateGroceryList = async (params: UpdateGroceryListParams) => {
+  const response = await fetch(`${config.apiUrl}/grocery-lists/${params.id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(params.update),
+  });
+  return response.json();
 };

@@ -1,18 +1,11 @@
-import {
-  AddIcon,
-  Box,
-  CheckIcon,
-  HStack,
-  Icon,
-  Spinner,
-  Text,
-} from "@gluestack-ui/themed";
+import { Box, CheckIcon, HStack, Icon, Text } from "@gluestack-ui/themed";
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { useNavigation } from "expo-router";
 import React, { useCallback, useMemo } from "react";
 import { FlatList, ListRenderItemInfo, TouchableOpacity } from "react-native";
 
 import { createGroceryList, getGroceryLists } from "src/api/groceryLists";
+import { AddButton } from "src/components/AddButton";
 import { ListFooter } from "src/components/ListFooter";
 import { useLoadMore } from "src/hooks/useLoadMore";
 import { QueryKeys } from "src/services/queryClient";
@@ -25,7 +18,7 @@ const ITEMS_PER_REQUEST = 20;
 const isListCompleted = (list: GroceryList) =>
   list.items.length > 0 && list.items.every((item) => item.isChecked);
 
-export default function SignInScreen() {
+export default function HomeScreen() {
   const navigation = useNavigation<RootNavigationProp>();
 
   const { data, fetchNextPage, hasNextPage, isFetching, refetch } =
@@ -126,26 +119,7 @@ export default function SignInScreen() {
         onEndReachedThreshold={0.25}
         renderItem={renderItem}
       />
-      <TouchableOpacity activeOpacity={0.8} onPress={onAddItemPress}>
-        <Box
-          // opacity={0.8}
-          alignItems="center"
-          bg="$primary800"
-          borderRadius="$full"
-          bottom="$6"
-          h="$16"
-          justifyContent="center"
-          position="absolute"
-          right="$6"
-          w="$16"
-        >
-          {isGroceryListAdding ? (
-            <Spinner color="white" />
-          ) : (
-            <Icon as={AddIcon} color="white" w="$8" h="$8" />
-          )}
-        </Box>
-      </TouchableOpacity>
+      <AddButton isLoading={isGroceryListAdding} onPress={onAddItemPress} />
     </>
   );
 }
