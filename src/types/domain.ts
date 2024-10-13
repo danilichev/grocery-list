@@ -9,4 +9,5 @@ export interface GroceryItem {
 export interface GroceryList {
   id: string;
   items: GroceryItem[];
+  name: string;
 }

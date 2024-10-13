@@ -15,12 +15,13 @@ const generateGroceryList = (id, itemCount) => ({
   items: Array.from({ length: itemCount }, (_, i) =>
     generateGroceryItem(i + 1),
   ),
+  name: `List ${id}`,
 });
 
 const generateDb = (listCount, itemCount) => ({
   "grocery-lists": Array.from({ length: listCount }, (_, i) =>
     generateGroceryList(i + 1, Math.floor(Math.random() * itemCount) + 1),
-  ),
+  ).reverse(),
 });
 
 const db = generateDb(100, 10);
