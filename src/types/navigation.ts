@@ -1,7 +1,7 @@
 import { NavigationProp } from "@react-navigation/native";
 
 export interface RootParamList {
-  "grocery-list": { id: string };
+  "grocery-list": { id: string; name: string };
   index: undefined;
 }
 

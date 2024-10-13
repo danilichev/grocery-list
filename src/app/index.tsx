@@ -49,7 +49,7 @@ export default function SignInScreen() {
         console.log("addGroceryList:error", error);
       },
       onSuccess: (data) => {
-        navigation.navigate("grocery-list", { id: data.id });
+        navigation.navigate("grocery-list", { id: data.id, name: data.name });
         refetch();
       },
     });
@@ -82,15 +82,16 @@ export default function SignInScreen() {
   }, [addGroceryList, data]);
 
   const onItemPress = useCallback(
-    (id: string) => () => {
-      navigation.navigate("grocery-list", { id });
-    },
+    ({ id, name }: GroceryList) =>
+      () => {
+        navigation.navigate("grocery-list", { id, name });
+      },
     [navigation],
   );
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<GroceryList>) => (
-      <TouchableOpacity activeOpacity={0.8} onPress={onItemPress(item.id)}>
+      <TouchableOpacity activeOpacity={0.8} onPress={onItemPress(item)}>
         <Box borderBottomWidth="$1" borderColor="$trueGray300" py="$4" p="$8">
           <HStack space="md" justifyContent="space-between">
             <Text color="$coolGray800" fontWeight="$bold">
