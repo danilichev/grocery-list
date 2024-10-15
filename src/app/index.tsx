@@ -44,7 +44,6 @@ export default function HomeScreen() {
       mutationFn: createGroceryList,
       mutationKey: [QueryKeys.createGroceryList],
       onError: (error) => {
-        console.log("addGroceryList:error", error);
         Alert.alert("Error", "Failed to add grocery list");
       },
       onSuccess: (data) => {

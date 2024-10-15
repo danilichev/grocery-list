@@ -15,7 +15,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Alert, FlatList, ListRenderItemInfo } from "react-native";
 import * as yup from "yup";
@@ -94,7 +94,7 @@ export default function GroceryListScreen() {
     },
   });
 
-  const { control, handleSubmit, reset, watch } = useForm<FormData>({
+  const { control, handleSubmit, reset } = useForm<FormData>({
     defaultValues,
     resolver: yupResolver<FormData>(schema),
   });
@@ -185,12 +185,6 @@ export default function GroceryListScreen() {
     },
     [onCheckItemChange, onDeleteItemPress, onEditItemPress],
   );
-
-  const formValues = watch();
-
-  useEffect(() => {
-    console.log("formValues", formValues);
-  }, [formValues]);
 
   return (
     <>
