@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "grocery-list",
-    "slug": "grocery-list",
-    "scheme": "danilichev-grocery-list",
-    "version": "1.0.0",
+    "name": "grocerylist",
+    "slug": "grocerylist",
+    "scheme": "grocerylist",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -21,7 +21,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.litslink.grocerylist"
+      "package": "io.github.danilichev.grocerylist"
     },
     "web": {
       "favicon": "./assets/favicon.png"

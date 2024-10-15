@@ -2,10 +2,6 @@ import {
   Box,
   Button,
   ButtonText,
-  Checkbox,
-  CheckboxIcon,
-  CheckboxIndicator,
-  CheckIcon,
   HStack,
   Modal,
   ModalBackdrop,
@@ -19,14 +15,15 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FlatList, ListRenderItemInfo } from "react-native";
+import { Alert, FlatList, ListRenderItemInfo } from "react-native";
 import * as yup from "yup";
 
 import * as api from "src/api/groceryLists";
 import { AddButton } from "src/components/AddButton";
 import { FormInput } from "src/components/FormInput";
+import { GroceryListItem } from "src/components/GroceryListItem";
 import { QueryKeys } from "src/services/queryClient";
 import { GroceryItem, GroceryList } from "src/types/domain";
 import { RootParamList } from "src/types/navigation";
@@ -39,7 +36,6 @@ const defaultValues: FormData = {
 };
 
 const schema = yup.object<FormData>().shape({
-  // id: yup.string().required(),
   name: yup
     .string()
     .min(3, "Must contain at least 3 characters")
@@ -70,7 +66,7 @@ export default function GroceryListScreen() {
       _,
       context: { prevGroceryList?: GroceryList } | undefined,
     ) => {
-      // TODO: Show alert
+      Alert.alert("Error", "Failed to update grocery list");
       queryClient.setQueryData(groceryListQueryKey, context?.prevGroceryList);
     },
     onMutate: async (variables) => {
@@ -91,9 +87,14 @@ export default function GroceryListScreen() {
         queryKey: groceryListQueryKey,
       });
     },
+    onSuccess: async () => {
+      return await queryClient.invalidateQueries({
+        queryKey: [QueryKeys.groceryLists],
+      });
+    },
   });
 
-  const { control, handleSubmit, reset } = useForm<FormData>({
+  const { control, handleSubmit, reset, watch } = useForm<FormData>({
     defaultValues,
     resolver: yupResolver<FormData>(schema),
   });
@@ -109,12 +110,13 @@ export default function GroceryListScreen() {
   }, [reset]);
 
   const onAddItemPress = useCallback(() => {
+    reset(defaultValues);
     setSelectedItemId(undefined);
     setIsModalOpen(true);
-  }, []);
+  }, [reset]);
 
   const onCheckItemChange = useCallback(
-    (item: GroceryItem) => (isChecked: boolean) => {
+    (item: GroceryItem, isChecked: boolean) => {
       updateGroceryList({
         id: searchParams.id,
         update: {
@@ -125,6 +127,27 @@ export default function GroceryListScreen() {
       });
     },
     [groceryList?.items, searchParams.id, updateGroceryList],
+  );
+
+  const onDeleteItemPress = useCallback(
+    (item: GroceryItem) => {
+      updateGroceryList({
+        id: searchParams.id,
+        update: {
+          items: groceryList?.items.filter((i) => i.id !== item.id),
+        },
+      });
+    },
+    [groceryList?.items, searchParams.id, updateGroceryList],
+  );
+
+  const onEditItemPress = useCallback(
+    (item: GroceryItem) => {
+      setSelectedItemId(item.id);
+      reset(item);
+      setIsModalOpen(true);
+    },
+    [reset],
   );
 
   const onUpdateItemSubmit = useCallback(
@@ -152,32 +175,22 @@ export default function GroceryListScreen() {
   const renderGroceryItem = useCallback(
     ({ item }: ListRenderItemInfo<GroceryItem>) => {
       return (
-        <Box borderBottomWidth="$1" borderColor="$trueGray300" py="$4" p="$8">
-          <HStack>
-            <Checkbox
-              isChecked={item.isChecked}
-              mr="$2"
-              onChange={onCheckItemChange(item)}
-              size="md"
-              value=""
-            >
-              <CheckboxIndicator mr="$2" bgColor="transparent">
-                <CheckboxIcon as={CheckIcon} />
-              </CheckboxIndicator>
-            </Checkbox>
-            <Text
-              color="$coolGray800"
-              fontWeight="$bold"
-              textDecorationLine={item.isChecked ? "line-through" : "none"}
-            >
-              {[item.name, [item.quantity, item.unit].join(" ")].join(", ")}
-            </Text>
-          </HStack>
-        </Box>
+        <GroceryListItem
+          {...item}
+          onCheck={onCheckItemChange}
+          onDelete={onDeleteItemPress}
+          onEdit={onEditItemPress}
+        />
       );
     },
-    [onCheckItemChange],
+    [onCheckItemChange, onDeleteItemPress, onEditItemPress],
   );
+
+  const formValues = watch();
+
+  useEffect(() => {
+    console.log("formValues", formValues);
+  }, [formValues]);
 
   return (
     <>
@@ -211,6 +224,7 @@ export default function GroceryListScreen() {
                 <Box flex={1}>
                   <FormInput<FormData>
                     control={control}
+                    inputMode="numeric"
                     name="quantity"
                     placeholder="Quantity"
                   />

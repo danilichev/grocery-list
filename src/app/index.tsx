@@ -2,7 +2,12 @@ import { Box, CheckIcon, HStack, Icon, Text } from "@gluestack-ui/themed";
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { useNavigation } from "expo-router";
 import React, { useCallback, useMemo } from "react";
-import { FlatList, ListRenderItemInfo, TouchableOpacity } from "react-native";
+import {
+  Alert,
+  FlatList,
+  ListRenderItemInfo,
+  TouchableOpacity,
+} from "react-native";
 
 import { createGroceryList, getGroceryLists } from "src/api/groceryLists";
 import { AddButton } from "src/components/AddButton";
@@ -40,6 +45,7 @@ export default function HomeScreen() {
       mutationKey: [QueryKeys.createGroceryList],
       onError: (error) => {
         console.log("addGroceryList:error", error);
+        Alert.alert("Error", "Failed to add grocery list");
       },
       onSuccess: (data) => {
         navigation.navigate("grocery-list", { id: data.id, name: data.name });

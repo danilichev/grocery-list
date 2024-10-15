@@ -63,8 +63,9 @@ export const getGroceryLists = async ({
   };
 };
 
-// TODO: add response type
-export const updateGroceryList = async (params: UpdateGroceryListParams) => {
+export const updateGroceryList = async (
+  params: UpdateGroceryListParams,
+): Promise<GroceryList> => {
   const response = await fetch(`${config.apiUrl}/grocery-lists/${params.id}`, {
     method: "PATCH",
     headers: {

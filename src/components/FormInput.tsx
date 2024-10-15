@@ -5,7 +5,7 @@ import {
   Input,
   InputField,
 } from "@gluestack-ui/themed";
-import React from "react";
+import React, { ComponentProps } from "react";
 import {
   FieldPath,
   FieldValues,
@@ -15,11 +15,13 @@ import {
 
 interface FormInputProps<T extends FieldValues>
   extends UseControllerProps<T, FieldPath<T>> {
+  inputMode?: ComponentProps<typeof InputField>["inputMode"];
   placeholder?: string;
 }
 
 export const FormInput = <T extends FieldValues>({
   placeholder,
+  inputMode,
   ...controllerProps
 }: FormInputProps<T>) => {
   const { field, fieldState } = useController(controllerProps);
@@ -28,9 +30,11 @@ export const FormInput = <T extends FieldValues>({
     <FormControl isInvalid={!!fieldState.error} size="lg">
       <Input variant="underlined">
         <InputField
+          inputMode={inputMode}
           onBlur={field.onBlur}
           onChangeText={field.onChange}
           placeholder={placeholder}
+          value={field.value?.toString()}
         />
       </Input>
       <FormControlError>
