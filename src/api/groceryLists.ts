@@ -5,6 +5,7 @@ import {
   PaginationResult,
 } from "src/types/common";
 import { GroceryList } from "src/types/domain";
+import { validateResponse } from "src/utils/api";
 
 interface DeleteGroceryListParams {
   id: string;
@@ -73,5 +74,8 @@ export const updateGroceryList = async (
     },
     body: JSON.stringify(params.update),
   });
+
+  await validateResponse(response);
+
   return response.json();
 };

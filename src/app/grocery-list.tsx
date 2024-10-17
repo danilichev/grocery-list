@@ -66,7 +66,7 @@ export default function GroceryListScreen() {
       _,
       context: { prevGroceryList?: GroceryList } | undefined,
     ) => {
-      Alert.alert("Error", "Failed to update grocery list");
+      Alert.alert("Error", error.message);
       queryClient.setQueryData(groceryListQueryKey, context?.prevGroceryList);
     },
     onMutate: async (variables) => {
@@ -208,12 +208,43 @@ export default function GroceryListScreen() {
         <ModalContent paddingVertical="$2" paddingHorizontal="$2">
           <ModalHeader />
           <ModalBody automaticallyAdjustKeyboardInsets>
-            <VStack>
+            <VStack flex={1}>
               <FormInput<FormData>
                 control={control}
                 name="name"
                 placeholder="Item Name"
               />
+              <FormInput<FormData>
+                control={control}
+                name="name"
+                placeholder="Item Name"
+              />
+              <FormInput<FormData>
+                control={control}
+                name="name"
+                placeholder="Item Name"
+              />
+              <FormInput<FormData>
+                control={control}
+                name="name"
+                placeholder="Item Name"
+              />
+              <FormInput<FormData>
+                control={control}
+                name="name"
+                placeholder="Item Name"
+              />
+              <FormInput<FormData>
+                control={control}
+                name="name"
+                placeholder="Item Name"
+              />
+              <FormInput<FormData>
+                control={control}
+                name="name"
+                placeholder="Item Name"
+              />
+
               <HStack space="md">
                 <Box flex={1}>
                   <FormInput<FormData>
